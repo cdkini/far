@@ -54,7 +54,7 @@ def collect_files(path: str) -> List[pathlib.Path]:
 def _collect_files_from_dir(directory: pathlib.Path) -> List[pathlib.Path]:
     files: List[pathlib.Path] = []
     for file in directory.glob("**/*"):
-        if not file.is_file() or any(p.startswith(".") for p in file.parts):
+        if not file.is_file() or any(p[0] == "." and p[1] != "." for p in file.parts):
             continue
         files.append(file)
 

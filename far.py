@@ -18,11 +18,18 @@ class Match:
 @click.argument("pattern", required=True, type=str)
 @click.argument("replacement", required=True, type=str)
 @click.argument("path", required=False, default=".", type=click.Path(exists=True))
-def main(pattern: str, replacement: str, path: str) -> None:
+@click.option("-I", "interactive", is_flag=True)
+def main(pattern: str, replacement: str, path: str, interactive: bool) -> None:
     r: re.Pattern = re.compile(rf"{pattern}")
     files: List[pathlib.Path] = collect_files(path)
     matches: Dict[str, List[Match]] = find_matches(files, r, replacement)
-    replacements: Dict[str, List[Match]] = review_matches(matches)
+
+    replacements: Dict[str, List[Match]]
+    if interactive:
+        replacements = review_matches(matches)
+    else:
+        replacements = matches
+
     perform_replacement(replacements)
 
 

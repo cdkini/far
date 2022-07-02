@@ -11,7 +11,6 @@ class Match:
     line_no: int
     original_row: str
     updated_row: str
-    stylized_row: str
 
 
 @click.command("far")
@@ -91,18 +90,12 @@ def _find_matches(
 
     matches: List = []
     for line_no, row in enumerate(contents):
-        match_parts: List[str] = pattern.split(row)
-        if len(match_parts) > 1:
-            # TODO(cdkini): Needs refactoring to work with multiple matches in the same line
-            updated_row: str = replacement.join(m for m in match_parts)
-            stylized_row: str = click.style(replacement, fg="red").join(
-                m for m in match_parts
-            )
+        updated_row: str = pattern.sub(replacement, string=row)
+        if updated_row != row:
             match: Match = Match(
                 line_no=line_no,
                 original_row=row,
                 updated_row=updated_row,
-                stylized_row=stylized_row,
             )
             matches.append(match)
 
@@ -131,9 +124,11 @@ def _review_matches(file: str, matches: List[Match], preview_only: bool) -> List
 
 
 def _review_match(file: str, match: Match, preview_only: bool) -> bool:
-    click.secho(f"\n{file}:", fg="cyan", nl=False)
-    click.secho(f"L{match.line_no + 1}", fg="yellow")
-    click.secho(f"{match.stylized_row.strip()}")
+    click.secho(f"\n{file}:L{match.line_no + 1}", fg="yellow")
+    stylized_original_row: str = click.style(f"-{match.original_row.strip()}", fg="red")
+    click.secho(stylized_original_row)
+    stylized_updated_row: str = click.style(f"+{match.updated_row.strip()}", fg="green")
+    click.secho(stylized_updated_row)
 
     replace: Optional[bool] = None
 

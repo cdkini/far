@@ -20,13 +20,13 @@ class Match:
 @click.argument("path", required=False, default=".", type=click.Path(exists=True))
 def main(pattern: str, replacement: str, path: str) -> None:
     r: re.Pattern = re.compile(rf"{pattern}")
-    files: List[pathlib.Path] = _collect_files(path)
+    files: List[pathlib.Path] = collect_files(path)
     matches: Dict[str, List[Match]] = find_matches(files, r, replacement)
     replacements: Dict[str, List[Match]] = review_matches(matches)
     perform_replacement(replacements)
 
 
-def _collect_files(path: str) -> List[pathlib.Path]:
+def collect_files(path: str) -> List[pathlib.Path]:
     p: pathlib.Path = pathlib.Path(path)
 
     files: List[pathlib.Path]

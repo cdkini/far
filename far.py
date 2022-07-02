@@ -109,7 +109,6 @@ def _review_match(file: str, match: Match) -> bool:
     click.secho(f"{match.line_no + 1}", fg="yellow", nl=False)
     click.secho(f":{match.stylized_row.strip()}")
 
-    cmd: str
     replace: Optional[bool] = None
     while replace is None:
         cmd: str = input("\nCommand: ").lower()

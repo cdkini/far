@@ -17,8 +17,8 @@ class Match:
 @click.argument("pattern", required=True, type=str)
 @click.argument("replacement", required=True, type=str)
 @click.argument("path", required=False, default=".", type=click.Path(exists=True))
-@click.option("-I", "interactive", is_flag=True)
-@click.option("-P", "preview", is_flag=True)
+@click.option("--interactive", "-I", "interactive", is_flag=True)
+@click.option("--preview", "-P", "preview", is_flag=True)
 def main(
     pattern: str, replacement: str, path: str, interactive: bool, preview: bool
 ) -> None:

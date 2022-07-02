@@ -44,9 +44,19 @@ def collect_files(path: str) -> List[pathlib.Path]:
 
     files: List[pathlib.Path]
     if p.is_dir():
-        files = list(filter(lambda f: f.is_file(), [f for f in p.glob("**/*")]))
+        files = _collect_files_from_dir(p)
     else:
         files = [p]
+
+    return files
+
+
+def _collect_files_from_dir(directory: pathlib.Path) -> List[pathlib.Path]:
+    files: List[pathlib.Path] = []
+    for file in directory.glob("**/*"):
+        if not file.is_file() or any(p.startswith(".") for p in file.parts):
+            continue
+        files.append(file)
 
     return files
 

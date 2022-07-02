@@ -19,18 +19,24 @@ class Match:
 @click.argument("replacement", required=True, type=str)
 @click.argument("path", required=False, default=".", type=click.Path(exists=True))
 @click.option("-I", "interactive", is_flag=True)
-def main(pattern: str, replacement: str, path: str, interactive: bool) -> None:
+@click.option("-P", "preview", is_flag=True)
+def main(
+    pattern: str, replacement: str, path: str, interactive: bool, preview: bool
+) -> None:
+    assert not (interactive and preview), "Cannot use -I and -P flags together"
+
     r: re.Pattern = re.compile(rf"{pattern}")
     files: List[pathlib.Path] = collect_files(path)
     matches: Dict[str, List[Match]] = find_matches(files, r, replacement)
 
     replacements: Dict[str, List[Match]]
-    if interactive:
-        replacements = review_matches(matches)
+    if interactive or preview:
+        replacements = review_matches(matches, preview_only=preview)
     else:
         replacements = matches
 
-    perform_replacement(replacements)
+    if not preview:
+        perform_replacement(replacements)
 
 
 def collect_files(path: str) -> List[pathlib.Path]:
@@ -92,31 +98,37 @@ def _find_matches(
     return matches
 
 
-def review_matches(all_matches: Dict[str, List[Match]]) -> Dict[str, List[Match]]:
+def review_matches(
+    all_matches: Dict[str, List[Match]], preview_only
+) -> Dict[str, List[Match]]:
     all_replacements: Dict[str, List[Match]] = {}
     for file, matches in all_matches.items():
-        replacements: List[Match] = _review_matches(file, matches)
+        replacements: List[Match] = _review_matches(file, matches, preview_only)
         all_replacements[file] = replacements
 
     return all_replacements
 
 
-def _review_matches(file: str, matches: List[Match]) -> List[Match]:
+def _review_matches(file: str, matches: List[Match], preview_only: bool) -> List[Match]:
     replacements: List[Match] = []
     for match in matches:
-        replace: bool = _review_match(file, match)
+        replace: bool = _review_match(file, match, preview_only)
         if replace:
             replacements.append(match)
 
     return replacements
 
 
-def _review_match(file: str, match: Match) -> bool:
+def _review_match(file: str, match: Match, preview_only: bool) -> bool:
     click.secho(f"\n{file}", fg="cyan")
     click.secho(f"{match.line_no + 1}", fg="yellow", nl=False)
     click.secho(f":{match.stylized_row.strip()}")
 
     replace: Optional[bool] = None
+
+    if preview_only:
+        replace = False
+
     while replace is None:
         cmd: str = input("\nCommand: ").lower()
         if cmd in {"", "y"}:

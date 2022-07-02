@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: docs/.*|tests/test_sets/broken_excel_file\.xls|.*.ge_store_backend_id
+      - id: trailing-whitespace
+        exclude: docs/.*|tests/.*.fixture
+      - id: requirements-txt-fixer
+        exclude: docs/.*
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+  - repo: https://github.com/psf/black
+    rev: 22.6.0
+    hooks:
+      - id: black
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: 'v0.961'
+    hooks:
+      - id: mypy

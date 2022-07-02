@@ -11,6 +11,7 @@ class Match:
     line_no: int
     original_row: str
     updated_row: str
+    stylized_row: str
 
 
 @click.command("far")
@@ -69,13 +70,15 @@ def _find_matches(
     for line_no, row in enumerate(contents):
         match_parts: List[str] = pattern.split(row)
         if len(match_parts) > 1:
-            updated_row = click.style(replacement, fg="red").join(
+            updated_row: str = replacement.join(m for m in match_parts)
+            stylized_row: str = click.style(replacement, fg="red").join(
                 m for m in match_parts
             )
             match: Match = Match(
                 line_no=line_no,
                 original_row=row,
                 updated_row=updated_row,
+                stylized_row=stylized_row,
             )
             matches.append(match)
 
@@ -104,7 +107,7 @@ def _review_matches(file: str, matches: List[Match]) -> List[Match]:
 def _review_match(file: str, match: Match) -> bool:
     click.secho(f"\n{file}", fg="cyan")
     click.secho(f"{match.line_no + 1}", fg="yellow", nl=False)
-    click.secho(f":{match.updated_row.strip()}")
+    click.secho(f":{match.stylized_row.strip()}")
 
     cmd: str
     replace: Optional[bool] = None
@@ -127,12 +130,14 @@ def _perform_replacement(file: str, matches: List[Match]) -> None:
     with open(file, "r+") as f:
         contents: List[str] = f.readlines()
 
-    for match in matches:
-        line_no: int = match.line_no
-        updated_row: str = match.updated_row
-        contents[line_no] = updated_row
+        for match in matches:
+            line_no: int = match.line_no
+            updated_row: str = match.updated_row
+            contents[line_no] = updated_row
 
-    f.writelines(contents)
+        f.seek(0)
+        f.writelines(contents)
+        f.truncate()
 
 
 if __name__ == "__main__":

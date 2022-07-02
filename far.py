@@ -83,6 +83,7 @@ def _find_matches(
     for line_no, row in enumerate(contents):
         match_parts: List[str] = pattern.split(row)
         if len(match_parts) > 1:
+            # TODO(cdkini): Needs refactoring to work with multiple matches in the same line
             updated_row: str = replacement.join(m for m in match_parts)
             stylized_row: str = click.style(replacement, fg="red").join(
                 m for m in match_parts

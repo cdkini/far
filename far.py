@@ -120,9 +120,9 @@ def _review_matches(file: str, matches: List[Match], preview_only: bool) -> List
 
 
 def _review_match(file: str, match: Match, preview_only: bool) -> bool:
-    click.secho(f"\n{file}", fg="cyan")
-    click.secho(f"{match.line_no + 1}", fg="yellow", nl=False)
-    click.secho(f":{match.stylized_row.strip()}")
+    click.secho(f"\n{file}:", fg="cyan", nl=False)
+    click.secho(f"L{match.line_no + 1}", fg="yellow")
+    click.secho(f"{match.stylized_row.strip()}")
 
     replace: Optional[bool] = None
 

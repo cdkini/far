@@ -128,8 +128,16 @@ def _review_match(file: str, match: Match) -> bool:
 
 
 def perform_replacement(replacements: Dict[str, List[Match]]) -> None:
+    file_count: int = 0
+    match_count: int = 0
     for file, matches in replacements.items():
         _perform_replacement(file, matches)
+        file_count += 1
+        match_count += len(matches)
+
+    click.secho(
+        f"\nPerformed {match_count} replacements across {file_count} files.", bold=True
+    )
 
 
 def _perform_replacement(file: str, matches: List[Match]) -> None:

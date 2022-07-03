@@ -26,7 +26,7 @@ class Match:
 )
 @click.option(
     "--preview",
-    "-P",
+    "-p",
     "preview",
     is_flag=True,
     help="Print proposed changes to stdout without writing to disk.",

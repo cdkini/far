@@ -17,11 +17,26 @@ class Match:
 @click.argument("pattern", required=True, type=str)
 @click.argument("replacement", required=True, type=str)
 @click.argument("path", required=False, default=".", type=click.Path(exists=True))
-@click.option("--interactive", "-I", "interactive", is_flag=True)
-@click.option("--preview", "-P", "preview", is_flag=True)
+@click.option(
+    "--interactive",
+    "-I",
+    "interactive",
+    is_flag=True,
+    help="Interactively review each proposed change.",
+)
+@click.option(
+    "--preview",
+    "-P",
+    "preview",
+    is_flag=True,
+    help="Print proposed changes to stdout without writing to disk.",
+)
 def main(
     pattern: str, replacement: str, path: str, interactive: bool, preview: bool
 ) -> None:
+    """
+    far makes find-and-replace workflows from the terminal a breeze.
+    """
     assert not (interactive and preview), "Cannot use -I and -P flags together"
 
     r: re.Pattern = re.compile(rf"{pattern}")
